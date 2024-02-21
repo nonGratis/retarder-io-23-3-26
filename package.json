@@ -2,9 +2,9 @@
   "name": "dis-edu",
   "version": "2.1.0",
   "main": "index.js",
-  "description": "Databases course work template",
-  "repository": "https://github.com/boldak/dis-edu",
-  "author": "Andrey Boldak <boldak.andrey@gmail.com>",
+  "description": "Lab work on databases",
+  "repository": "https://github.com/nonGratis/retarder-io-23-3.git",
+  "author": "Andrii Shapovalov <shapovalov.andrii@lll.kpi.ua>",
   "license": "ECL 2.0",
   "scripts": {
     "test":"jest",
