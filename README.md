@@ -59,4 +59,11 @@ cd -
 
 Доступ до локально опублікованої версії документації [http://localhost:3030](http://localhost:3030)
 
+## Додаткова інформація
+
+- [Теми проєктів](./guidelines/themes.md)
+- [Методичні вказівки](./guidelines/guidelines.md)
+- [Документація vuepress-theme-hope](https://theme-hope.vuejs.press/)
+- [Документація Markdown](https://theme-hope.vuejs.press/cookbook/markdown/)
+
 ***Happy learning! Happy coding!*** 
