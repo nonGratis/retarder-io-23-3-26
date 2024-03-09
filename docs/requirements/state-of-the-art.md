@@ -60,4 +60,4 @@
 
 ## Посилання
 
-[1]: https://www.linkedin.com/advice/0/what-advantages-disadvantages-using-quantitative-1e
+
