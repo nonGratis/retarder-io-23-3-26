@@ -11,17 +11,17 @@ footer: "ECL 2.0 Licensed | Copyright © [2024] [Шаповалов Андрій
 
 **Шаповалов Андрій** – tg:[@nonGratis](https://t.me/nonGratis), email:`shapovalov.andrii@lll.kpi.ua`
 
-Васильєв Владислав – tg:[@dfttime](https://t.me/dfttime), email:`dfttime@ukr.net`
+Васильєв Владислав – tg:[@dfttime](https://t.me/dfttime)
 
-Гуща Максим – tg:[@maks1mka_77g](https://t.me/maks1mka_77g), email:`maksymgushcha20@gmail.com`
+Гуща Максим – tg:[@maks1mka_77g](https://t.me/maks1mka_77g)
 
-Коваленко Олександр – tg:[@sandrokovi3](https://t.me/sandrokovi3), email:`aleksandro.kovi@gmail.com`
+Коваленко Олександр – tg:[@sandrokovi3](https://t.me/sandrokovi3)
 
-Марцинюк Костянтин – tg:[@k0stich](https://t.me/k0stich), email: 
+Марцинюк Костянтин – tg:[@k0stich](https://t.me/k0stich)
 
-Мастеров Михайло – tg:[@cyberbebebe](https://t.me/cyberbebebe), email:`misha2005serg@gmail.com`
+Мастеров Михайло – tg:[@cyberbebebe](https://t.me/cyberbebebe)
 
-Рубаник Гліб – tg:[@forkreros](https://t.me/forkreros), email:`forkreros228@gmail.com`
+Рубаник Гліб – tg:[@forkreros](https://t.me/forkreros)
 
 
 **Керівник:**
