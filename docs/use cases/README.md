@@ -464,6 +464,7 @@ Administrator.Delete_Source .u.> ManageSource: <<extends>>
             wrong_search
         end note
     :Відображає її у вигляді списку або таблиці;
+|Адміністратор|
     stop
 @enduml
 
