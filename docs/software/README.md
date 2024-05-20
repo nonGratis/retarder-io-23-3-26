@@ -281,7 +281,7 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 
 exports.register = (req, res) => {
-    const {login, email, password} = req.body;
+    const {login, email, password} = req.query;
     const id = uuidv4(); // Generate a UUID
     const role_id = 1; // Default role for new client
 
@@ -318,7 +318,7 @@ exports.register = (req, res) => {
 };
 
 exports.login = (req, res) => {
-    const {login, email, password} = req.body;
+    const {login, email, password} = req.query;
 
     // Email validation
     const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
@@ -352,7 +352,7 @@ exports.login = (req, res) => {
 };
 
 exports.deleteRequest = (req, res) => {
-    const {login, password} = req.body;
+    const {login, password} = req.query;
 
     var sql = "SELECT * FROM client WHERE login = ?";
     db.query(sql, [login], (err, results) => {
