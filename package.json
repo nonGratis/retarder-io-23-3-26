@@ -1,13 +1,13 @@
 {
-  "name": "retarder-io-23-3",
+  "name": "retarder-io-23-3-26",
   "version": "2.1.0",
   "main": "index.js",
   "description": "Lab work on databases",
-  "repository": "https://github.com/nonGratis/retarder-io-23-3.git",
+  "repository": "https://github.com/nonGratis/retarder-io-23-3-26.git",
   "author": "Andrii Shapovalov <shapovalov.andrii@lll.kpi.ua>",
   "license": "ECL 2.0",
   "scripts": {
-    "test":"jest",
+    "test": "jest",
     "docs:api": "jsdoc2md  src/**/*.js  > docs/api/README.md",
     "docs:dev": "npm run docs:api && npx vuepress dev docs",
     "docs:build": "npm run docs:api && npx vuepress build docs",
@@ -23,5 +23,4 @@
     "jest": "^27.1.0",
     "jsdoc-to-markdown": "^7.0.1"
   }
-
 }
