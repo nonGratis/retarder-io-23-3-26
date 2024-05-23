@@ -218,13 +218,19 @@ COMMIT;
 const express = require('express');
 const dotenv = require('dotenv').config();
 const app = express();
-const userRoutes = require('./routes/ProfileManage');
+
+const sessionRoutes = require('./routes/sessionRouter');
+const accountRoutes = require('./routes/accountRouter');
+const mediadataRouter = require('./routes/mediadataRouter');
+
 const { handle404Errors, handleDevErrors, handleProdErrors } = require('./middlewares/errorHandlers');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/', userRoutes);
+app.use('/', sessionRoutes);
+app.use('/', accountRoutes);
+app.use('/mediadata', mediadataRouter);
 
 app.use(handle404Errors);
 app.use(handleDevErrors);
@@ -265,11 +271,12 @@ module.exports = db;
 ```js
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/ProfileManage');
+const userController = require('../controllers/accountController');
+const authMiddleware = require('../middlewares/auth');
 
 router.post('/users', userController.register); // Create a new user
-router.post('/sessions', userController.login); // Create a new session (log in)
-router.delete('/users/:id', userController.deleteRequest); // Delete a user
+router.put('/users/:id', authMiddleware, userController.editAccount); // Edit a user
+router.delete('/users/:id', authMiddleware, userController.deleteRequest); // Delete a user
 
 module.exports = router;
 ```
@@ -281,9 +288,9 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 
 exports.register = (req, res) => {
-    const {login, email, password} = req.query;
+    const {login, email, password} = req.body;
     const id = uuidv4(); // Generate a UUID
-    const role_id = 1; // Default role for new client
+    const role_id = 2; // Default role for new client is basic user
 
     // Email validation
     const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
@@ -317,17 +324,99 @@ exports.register = (req, res) => {
     });
 };
 
-exports.login = (req, res) => {
-    const {login, email, password} = req.query;
+exports.editAccount = (req, res) => {
+    const { login, email, password } = req.body;
+    const { id } = req.params; // Get the id from URL parameters
 
     // Email validation
     const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
     if (!emailRegex.test(email)) {
         return res.status(400)
-                .json({ error: 'Login.WrongEmail' });
+                .json({ error: 'EditAccount.WrongEmail' });
     }
 
-    var sql = "SELECT * FROM client WHERE login = ? AND email = ?";
+    // Password validation
+    if (password.length < 8) {
+        return res.status(400)
+                .json({ error: 'EditAccount.SimplePass' });
+    }
+
+    var sql = "UPDATE client SET login = ?, email = ?, password = ? WHERE id = ?";
+
+    db.query(sql, [login, email, password, id], (err) => {
+        if (err) {
+            console.error('Error in SQL query:', err);
+            if (err.code === 'ER_DUP_ENTRY') {
+                if (err.sqlMessage.indexOf('login') > 0) {
+                    return res.status(400)
+                            .json({ error: 'Login already in use' });
+                } else if (err.sqlMessage.indexOf('email') > 0) {
+                    return res.status(400)
+                            .json({ error: 'Email already in use' });
+                }
+            }
+            return res.status(500)
+                    .json({ error: 'Internal Server Error' });
+        } else {
+            res.status(200)
+            .json({ message: 'Account Updated Successfully' });
+        }
+    });
+};
+
+exports.deleteRequest = (req, res) => {
+    const { id } = req.params; // Get the id from URL parameters
+
+    var sql = "SELECT * FROM client WHERE id = ?";
+    db.query(sql, [id], (err, results) => {
+        if (err) {
+            console.error('Error in SQL query:', err);
+            return res.status(500)
+                    .json({ error: 'Internal Server Error' });
+        } else {
+            if (results.length === 0) {
+                return res.status(400)
+                        .json({ error: 'DeleteRequest.AccDoesntExist' });
+            } else {
+                var sql = `DELETE FROM client WHERE id = ?`;
+                db.query(sql, [id], (err) => {
+                    if (err) {
+                        console.error('Error in SQL query:', err);
+                        return res.status(500)
+                                .json({ error: 'Internal Server Error' });
+                    } else {
+                        res.status(200)
+                        .json({ message: 'Account Deleted Successfully' });
+                    }
+                });
+            }
+        }
+    });
+};
+```
+
+### Модуль маршрутів для забезпечення сесій клієнта з сервісом
+
+```js
+const express = require('express');
+const router = express.Router();
+const userController = require('../controllers/sessionController');
+
+router.post('/sessions', userController.login); // Create a new session (log in)
+
+module.exports = router;
+```
+
+### Модуль контролерів для забезпечення сесій клієнта з сервісом
+
+```js
+const db = require('../db');
+const jwt = require('jsonwebtoken');
+
+exports.login = (req, res) => {
+    const {login, email, password} = req.body;
+
+    var sql = "SELECT client.*, role.name as role_name FROM client INNER JOIN role ON client.role_id = role.id WHERE login = ? AND email = ?";
     db.query(sql, [login, email], (err, results) => {
         if (err) {
             console.error('Error in SQL query:', err);
@@ -343,44 +432,12 @@ exports.login = (req, res) => {
                     return res.status(400)
                             .json({ error: 'Login.WrongPass' });
                 } else {
-                    res.status(200)
-                    .json({ message: 'Logged in Successfully' });
-                }
-            }
-        }
-    });
-};
+                    // If login is successful, generate a JWT
+                    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-exports.deleteRequest = (req, res) => {
-    const {login, password} = req.query;
-
-    var sql = "SELECT * FROM client WHERE login = ?";
-    db.query(sql, [login], (err, results) => {
-        if (err) {
-            console.error('Error in SQL query:', err);
-            return res.status(500)
-                    .json({ error: 'Internal Server Error' });
-        } else {
-            if (results.length === 0) {
-                return res.status(400)
-                        .json({ error: 'DeleteRequest.AccDoesntExist' });
-            } else {
-                const user = results[0];
-                if (user.password !== password) {
-                    return res.status(400)
-                            .json({ error: 'DeleteRequest.WrongPass' });
-                } else {
-                    var sql = `DELETE FROM client WHERE login = '${login}'`;
-                    db.query(sql, (err) => {
-                        if (err) {
-                            console.error('Error in SQL query:', err);
-                            return res.status(500)
-                                    .json({ error: 'Internal Server Error' });
-                        } else {
-                            res.status(200)
-                            .json({ message: 'Account Deleted Successfully' });
-                        }
-                    });
+                    // Include the user's role in the response
+                    return res.status(200)
+                    .json({ message: 'Logged in Successfully', role: user.role_name, token });
                 }
             }
         }
@@ -388,41 +445,63 @@ exports.deleteRequest = (req, res) => {
 };
 ```
 
-## Модуль обробок помилок
+### Модуль маршрутів для забезпечення деякого менеджменту медіаданих
 
 ```js
-// 404 Error Handler
-function handle404Errors(req, res, next) {
-    const err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-}
+const express = require('express');
+const mediadataController = require('../controllers/mediadataController');
 
-// Development Error Handler
-// Will print stacktrace
-function handleDevErrors(err, req, res, next) {
-    if (req.app.get('env') !== 'development') return next(err);
+const router = express.Router();
 
-    res.status(err.status || 500);
-    res.json({
-        message: err.message,
-        error: err
+router.post('/', mediadataController.addMediaData);
+router.delete('/:id', mediadataController.deleteMediaData);
+router.put('/:id', mediadataController.updateMediaData);
+router.get('/:id', mediadataController.getMediaData);
+
+module.exports = router;
+```
+
+### Модуль контролерів для забезпечення деякого менеджменту медіаданих
+
+```js
+const db = require('../db');
+
+exports.addMediaData = async (req, res) => {
+    const { name, fileType, metadata } = req.body;
+    await db.query('INSERT INTO mydb.mediadata (name, fileType, metadata) VALUES (?, ?, ?)', [name, fileType, metadata]);
+    res.status(201).send('Media data added successfully');
+};
+
+exports.deleteMediaData = async (req, res) => {
+    const { id } = req.params;
+    await db.query('DELETE FROM mydb.mediadata WHERE id = ?', [id]);
+    res.status(200).send('Media data deleted successfully');
+};
+
+exports.updateMediaData = async (req, res) => {
+    const { id } = req.params;
+    const { name, fileType, metadata } = req.body;
+    await db.query('UPDATE mydb.mediadata SET name = ?, fileType = ?, metadata = ? WHERE id = ?', [name, fileType, metadata, id]);
+    res.status(200).send('Media data updated successfully');
+};
+
+exports.getMediaData = async (req, res) => {
+    const { id } = req.params;
+    console.log(id);
+    const result = await new Promise((resolve, reject) => {
+        db.query('SELECT * FROM mydb.mediadata WHERE id = ?', [id], (error, results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
     });
-}
-
-// Production Error Handler
-// No stacktraces leaked to user
-function handleProdErrors(err, req, res, next) {
-    res.status(err.status || 500);
-    res.json({
-        message: err.message,
-        error: {}
-    });
-}
-
-module.exports = {
-    handle404Errors,
-    handleDevErrors,
-    handleProdErrors
+    if (result.length > 0) {
+        const rows = result[0];
+        res.status(200).json(rows);
+    } else {
+        res.status(404).send('No data found for the provided id');
+    }
 };
 ```
