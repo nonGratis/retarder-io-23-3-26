@@ -56,7 +56,7 @@ node server.js
   <img src="./image-6.png">
 </p>
 
-### /mediadata – ДОДАВАННЯ МЕДІАДАНИХ
+#### /mediadata – ДОДАВАННЯ МЕДІАДАНИХ
 
 Початкове наповнення таблиці `mediadata` у РДБ:
 <p align="left">

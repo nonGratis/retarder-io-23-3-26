@@ -266,7 +266,9 @@ db.connect((err) => {
 module.exports = db;
 ```
 
-### Модуль маршрутів для забезпечення деякого менеджменту акаунтів
+### Модулі маршрутів
+
+- для забезпечення деякого менеджменту акаунтів:
 
 ```js
 const express = require('express');
@@ -281,7 +283,37 @@ router.delete('/users/:id', authMiddleware, userController.deleteRequest); // De
 module.exports = router;
 ```
 
-### Модуль контролерів для забезпечення деякого менеджменту акаунтів
+- для забезпечення сесій клієнта з сервісом:
+
+```js
+const express = require('express');
+const router = express.Router();
+const userController = require('../controllers/sessionController');
+
+router.post('/sessions', userController.login); // Create a new session (log in)
+
+module.exports = router;
+```
+
+- для забезпечення деякого менеджменту медіаданих:
+
+```js
+const express = require('express');
+const mediadataController = require('../controllers/mediadataController');
+
+const router = express.Router();
+
+router.post('/', mediadataController.addMediaData);
+router.delete('/:id', mediadataController.deleteMediaData);
+router.put('/:id', mediadataController.updateMediaData);
+router.get('/:id', mediadataController.getMediaData);
+
+module.exports = router;
+```
+
+### Модулі контролерів
+
+- для забезпечення деякого менеджменту акаунтів:
 
 ```js
 const { v4: uuidv4 } = require('uuid');
@@ -395,19 +427,7 @@ exports.deleteRequest = (req, res) => {
 };
 ```
 
-### Модуль маршрутів для забезпечення сесій клієнта з сервісом
-
-```js
-const express = require('express');
-const router = express.Router();
-const userController = require('../controllers/sessionController');
-
-router.post('/sessions', userController.login); // Create a new session (log in)
-
-module.exports = router;
-```
-
-### Модуль контролерів для забезпечення сесій клієнта з сервісом
+- для забезпечення сесій клієнта з сервісом:
 
 ```js
 const db = require('../db');
@@ -445,23 +465,7 @@ exports.login = (req, res) => {
 };
 ```
 
-### Модуль маршрутів для забезпечення деякого менеджменту медіаданих
-
-```js
-const express = require('express');
-const mediadataController = require('../controllers/mediadataController');
-
-const router = express.Router();
-
-router.post('/', mediadataController.addMediaData);
-router.delete('/:id', mediadataController.deleteMediaData);
-router.put('/:id', mediadataController.updateMediaData);
-router.get('/:id', mediadataController.getMediaData);
-
-module.exports = router;
-```
-
-### Модуль контролерів для забезпечення деякого менеджменту медіаданих
+- для забезпечення деякого менеджменту медіаданих:
 
 ```js
 const db = require('../db');
