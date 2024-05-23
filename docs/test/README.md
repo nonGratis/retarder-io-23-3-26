@@ -56,7 +56,7 @@ node server.js
   <img src="./image-6.png">
 </p>
 
-### /mediadata – ДОДАВАННЯ МЕДІАННИХ
+### /mediadata – ДОДАВАННЯ МЕДІАДАНИХ
 
 Початкове наповнення таблиці `mediadata` у РДБ:
 <p align="left">
@@ -75,7 +75,7 @@ node server.js
 
 ### GET
 
-#### /mediadata:id – ОТРИМАННЯ МЕДІАННИХ
+#### /mediadata:id – ОТРИМАННЯ МЕДІАДАНИХ
 
 Відповідно за відомим ID медіа, було отримані значення з РБД:
 <p align="left">
@@ -96,7 +96,7 @@ node server.js
   <img src="./image-8.png">
 </p>
 
-#### /users:id – ЗМІННА МЕДІАННИХ
+#### /users:id – ЗМІННА МЕДІАДАНИХ
 
 Відповідно за відомим ID медіа, було внесенні змінени до РДБ:
 <p align="left">
@@ -122,7 +122,7 @@ node server.js
   <img src="./image-18.png">
 </p>
 
-#### /mediadata:id – ВИДАЛЕННЯ МЕДІАННИХ
+#### /mediadata:id – ВИДАЛЕННЯ МЕДІАДАНИХ
 
 Відповідно за відомим ID медіа, було видалено необхідні медіадані з РДБ:
 <p align="left">
